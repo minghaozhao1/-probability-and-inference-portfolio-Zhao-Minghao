@@ -1,0 +1,11 @@
+---
+title: "student"
+output: html_document
+---
+## Getting to Know Qiushi Yan
+Qiushi Yan did a lot of R and programming during his undergrad. He felt quiet interesting in this filed, so he decided to persue a higher degreee in this field.
+
+He is from Beijing. His hobbies includes playing basketball and video games. 
+
+For artist, he likes Da Vinci. 
+
