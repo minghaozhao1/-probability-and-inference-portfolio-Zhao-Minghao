@@ -151,33 +151,42 @@ for(j in seq_along(walk_out_money)){
 ```{r}
 knitr::include_graphics("loser.svg")
 ```
-
-
+this is the loser graph. Showing the gambler's money when he is gambling. There are gain and lose, but eventually it goes to 0. 
 **Winner Graph**
 ```{r}
 knitr::include_graphics("winner.svg")
 ```
-
+this is the winner graph. It shows how a gambler wins. He might lose his money somehow, he will walkout with winning money. 
 
 
 ```{r}
 hist(walk_out_money, breaks = 100)
 ```
+This graph shows the frequency of winning and losing. There is no walkout in the middle. A gambler either win or lose. 
 
 ```{r}
 mean(walk_out_money > 200)
 
 ```
+This is the rate of winning of the simulatino. It is higher than 50%.
+
 
 ```{r}
 mean(walk_out_money - 200)
 ```
+This is the average winning of the simulation. It is negative, means the gambler walkout with losing money. 
 
 
 
-
-
-
+Finding the Average Stop
+```{r}
+total_play <- rep(NA, 10000)
+for(j in seq_along(total_play)){
+  total_play[j] <- one_series(B = 200, W = 300, L = 1000, M = 100) %>% length
+}
+mean(total_play)
+```
+This is the simulation code that can generate the average bet of the gambler before they stop playing. The function get_last is replaced by length, so the code can catch the length of the simulation ran for each trail. It took average 202 times of bet before the gambler can leave the casino with either win or bacnkrupcy. 
 
 
 
@@ -185,6 +194,44 @@ mean(walk_out_money - 200)
 
 
 # Results
+```{r}
+walk_out_money <- rep(NA, 10000)
+for(j in seq_along(walk_out_money)){
+  walk_out_money[j] <- one_series(B = 250, W = 300, L = 1000, M = 100) %>% get_last
+}
+mean(walk_out_money>200)
+mean(walk_out_money-200)
+```
+increased B from 200 to 250, give a winning rate at 0.7356. The walkout money is also showed.
+
+```{r}
+walk_out_money <- rep(NA, 10000)
+for(j in seq_along(walk_out_money)){
+  walk_out_money[j] <- one_series(B = 100, W = 1000, L = 1000, M = 100) %>% get_last
+}
+mean(walk_out_money>200)
+mean(walk_out_money-200)
+```
+increased the threshold from 300 to 1000, resulted a lower winning rate at 0.0858. The walkout money lowered significantly. 
+```{r}
+walk_out_money <- rep(NA, 10000)
+for(j in seq_along(walk_out_money)){
+  walk_out_money[j] <- one_series(B = 200, W = 300, L = 10000, M = 100) %>% get_last
+}
+mean(walk_out_money>200)
+mean(walk_out_money-200)
+```
+Changing the L will not affect the winning rate much. The average gain is still negative. 
+
+```{r}
+walk_out_money <- rep(NA, 10000)
+for(j in seq_along(walk_out_money)){
+  walk_out_money[j] <- one_series(B = 200, W = 300, L = 1000, M = 300) %>% get_last
+}
+mean(walk_out_money>200)
+mean(walk_out_money-200)
+```
+Changing the max wager will not affect the winning rate much. The average gain almost remain the same. It is still negative. 
 
 Changing the parameter. 
 In our simulation, there are 4 variables, B, W, L, M. Each of the variables can be changed. By changing only the budget, more of the budget will result a higher probability of walking out with wining. Adjusting the winnings threshold for stopping, if the threshold is far beyond the budget, like $100 budget with $10000 threshold, it will lower the wining probability significantly. The closer the threshold to the budget, the higher over all winning probability will be. The stopping threshold can also affect the result. By lowering the stopping threshold will increase the average winning probability, and increase the average amount of money wined. The maximum wager doesn't affect the result significantly, because it is based on the budget of the gambler. If the gambler's total budget is lower than the maximum, it won't affect the result significantly. 
