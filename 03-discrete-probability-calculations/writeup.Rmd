@@ -1,0 +1,131 @@
+---
+title: "writeup"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+## Background
+Braves and the Yankees are teams competing in the World Series.
+the probability that the Braves win is PB and the probability that the Yankees win is PY = 1 − PB.
+
+1. What is the probability that the Braves win the World Series given that PB=0.55?
+
+probability of yankees win 0 before Braves win 4 games 
+```{r}
+dnbinom(0,4,0.55)
+
+```
+
+probability of yankees win 1 before Braves win 4 games 
+```{r}
+dnbinom(1,4,0.55)
+
+```
+
+probability of yankees win 2 before Braves win 4 games 
+```{r}
+dnbinom(2,4,0.55)
+
+```
+
+probability of yankees win 3 before Braves win 4 games 
+```{r}
+dnbinom(3,4,0.55)
+
+```
+
+probability of yankees win fewer than 3 games before Braves win 4 games 
+
+```{r}
+pnbinom(3,4,0.55)
+```
+
+2. What is the probability that the Braves win the World Series given that PB = x? This will be a figure (see below) with PB on the x-axis and P(Braves win World Series) on the y-axis.
+
+```{r}
+PB<- seq(0.55,1,0.01)
+Pwinning <- function(p){
+  pnbinom(3,4,p)
+  
+}
+winning <- Pwinning(PB)
+Q2 <- data_frame(PB,winning)
+ggplot(Q2,aes(x=PB,y=winning) )+ geom_point(size=1) + geom_line()+ labs(title= "Probability of winning the World Series ",x="Probability of the Braves winning a head-to-head matchup",y="Pr(Win World Series)") + scale_y_continuous(breaks = seq(0,1,0.2), minor_breaks = NULL,limits = c(0,1)) 
+
+```
+
+
+3. Suppose one could change the World Series to be best-of-9 or some other best-of-X series. What is the shortest series length so that P(Braves win World Series|PB = .55) ≥ 0.8
+
+```{r}
+#table<-
+table <- as.data.frame(matrix(NA,0,1))
+#table <- data.frame( pear=NA,apple=NA)[numeric(0),]
+x=5
+p=0
+while ( p<=0.8 ) {
+  x=x+2
+  p=pnbinom((x-1)/2,(x+1)/2,0.55)
+  table[x,]<-p
+  
+}
+print(x)
+
+```
+The shortest series is 71
+
+
+4. What is the shortest series length so that P(Braves win World Series|PB = x) ≥ 0.8? This will be a figure (see below) with PB on the x-axis and series length is the y-axis.
+
+
+```{r}
+table <- as.data.frame(matrix(NA,0,1))
+#table <- data.frame( pear=NA,apple=NA)[numeric(0),]
+x=5
+p=0
+while ( p<=0.99 ) {
+  x=x+2
+  p=pnbinom((x-1)/2,(x+1)/2,0.55)
+  table[x,]<-p
+  
+}
+
+table <- table %>%
+  mutate(id=row_number()) %>%
+  na.omit(table) 
+
+table %>%
+    ggplot(aes(x=V1,y=id)) + geom_point(size=1)+geom_line() +labs(title= "Shortest series so that P(Win WS given p)>=0.8",x="Probability of the Braves winning a head-to-head matchup",y="series length") +
+  scale_x_continuous(breaks = seq(0.5,1,0.1), minor_breaks = NULL,limits = c(0.5,1))
+
+```
+
+
+5. Calculate P(PB = 0.55|Braves win World Series in 7 games) under the assumption that either PB = 0.55 or PB = 0.45. Explain your solution.
+
+Assumption:
+
+since PB is either 0.55 or 0.45, the probability of each case is 0.5. 
+
+apply bayes rule 
+
+P(PB = 0.55|Braves win World Series in 7 games)
+=P(Braves win World Series in 7 games|PB=0.55)*P(PB=0.55)/P(Braves win World Series in 7 games)
+=P(Braves win World Series in 7 games|PB=0.55)*0.5/(P(Braves win World Series in 7 games|0.45)*0.5+P(Braves win World Series in 7 games|0.55)*0.5)
+
+```{r}
+pnbinom(3,4,0.55)*0.5/(pnbinom(3,4,0.55)*0.5+pnbinom(3,4,0.45)*0.5)
+```
+use the bayes rule, we can find the equation to calculate the P(PB=0.55|Braves win World Series in 7 games). Since we assume the probability of winning have 0.5 chance for each value, we applied half of their probability when we are calculating the P(Braves win World Series in 7 games). The result is 0.6082878
+  
+
+
+
+
+
+
+
+
