@@ -1,5 +1,5 @@
 ---
-title: "wrtieup"
+title: "writeup"
 output: html_document
 ---
 
@@ -7,6 +7,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 ##Home Field Advantage 
+
 The home field advantage is the edge which a team may have when playing a game at its home stadium. For example, it is the edge the Braves may have over the Yankees when the head-to-head match-up is in Atlanta. It is the advantage the Yankees may have when the head-to-head match-up is in New York.
 
 The World Series is a first-to-4-wins match-up between the champions of the American and National Leagues of Major League Baseball. In this assignment, you are going to use simulation and analytic methods to compare the probability of winning the World Series with and without home field advantage.
@@ -179,14 +180,15 @@ abs(simu_prob_without - pwithout)/pwithout
 
 ```
 
+4. Does the difference in probabilities (with vs without home field advantage) depend on PB? (Generate a plot to answer this question.)
 
-
+Using the same code as the first one, we can add another loop and adjust the pb to a vector from 0.5 to 0.9. This can give us all the probabilities of Braves winning on different winnint Pb. 
 
 ```{r}
 prob_with_home <- rep(NA,400)
 prob_without_home <- rep(NA,400)
 for (k in 1:400) {
-  
+apo <- fread("all-possible-world-series-outcomes.csv") 
 
 hfi <- c(0,0,1,1,1,0,0) #{ATL, ATL, NYC, NYC, NYC, ATL, ATL} opposite
 
@@ -216,21 +218,63 @@ for(i in 1:nrow(apo)){
 #apo[, sum(p)] # This is data.table notation
 
 # Probability of overall World Series outcomes
-#apo[, sum(p), overall_outcome]
+apo[, sum(p), overall_outcome]
 win<-apo[overall_outcome == "W"]
 prob_with_home[k] <- sum(win$p)
-prob_without_home[k] <- pbinom(3,4,pb)
+prob_without_home[k] <- pnbinom(3,4,pb)
 }
-prob_with_home
-prob_without_home
-pb
-pbinom(3,4,0.5)
-plot(seq(0.501,0.9,0.001),prob_with_home-prob_without_home,type = 'l',lwd=3)
+
+plot(seq(0.501,0.9,0.001),prob_with_home-prob_without_home,type="l",lwd=5,xlab='Probability of Braves winning the serie',ylab='Difference in Probability',main="Difference between with and without home field advantage in probabilites ")
 ```
 
+The value of Pb is the changing point of the difference. When it is greater than 0.6, the probability is positive. However, the difference do not have have a constant trend. It has increases and decreases. 
 
 
+5. Does the difference in probabilities (with vs without home field advantage) depend on the advantage factor? (The advantage factor in PBH and PBA is the 1.1 multiplier that results in a 10% increase for the home team. Generate a plot to answer this question.)
 
+By using the same code, we adjust the probability of Braves winning to a constant at 0.55. The home field advantage is starting from 1.0 and increase at 0.01 increment until 1.9. 
 
+```{r}
+prob_with_home <- rep(NA,90)
+prob_without_home <- rep(NA,90)
+for (k in 1:90) {
+apo <- fread("all-possible-world-series-outcomes.csv") 
 
+hfi <- c(0,0,1,1,1,0,0) #{ATL, ATL, NYC, NYC, NYC, ATL, ATL} opposite
 
+# P_B
+pb <- 0.55
+advantage_multiplier <- 1 + k*0.01 # Set = 1 for no advantage
+pbh <- pb*advantage_multiplier
+pba <- 1 - (1 - pb)*advantage_multiplier
+
+# Calculate the probability of each possible outcome
+apo[, p := NA_real_] # Initialize new column in apo to store prob
+for(i in 1:nrow(apo)){
+  prob_game <- rep(1, 7)
+  for(j in 1:7){
+    p_win <- ifelse(hfi[j], pbh, pba)
+    prob_game[j] <- case_when(
+        apo[i,j,with=FALSE] == "W" ~ p_win
+      , apo[i,j,with=FALSE] == "L" ~ 1 - p_win
+      , TRUE ~ 1
+    )
+  }
+  
+  apo[i, p := prod(prob_game)] # Data.table syntax
+}
+
+# Sanity check: does sum(p) == 1?
+#apo[, sum(p)] # This is data.table notation
+
+# Probability of overall World Series outcomes
+apo[, sum(p), overall_outcome]
+win<-apo[overall_outcome == "W"]
+prob_with_home[k] <- sum(win$p)
+prob_without_home[k] <- pnbinom(3,4,pb)
+}
+
+plot(seq(1.01,1.9,0.01),prob_with_home-prob_without_home,type="l",lwd=5,xlab='Advantage Factor',ylab='Difference in Probability',main="Difference between with and without home field advantage in probabilites ")
+```
+
+We can observe from the plot that the probability difference starting decrease as the home filed advantage factor increases. The probability to win at Braves home field will increase with the home field advantage factor. Also, the probability to win in New York will decrease, because Yankee's probability of winning increases with the increase of home field advantage factor. Based on the series setting, the overall probability of winning the series will decrease as the home filed advantage factor increase, because Yankee has one additional home field than Braves. 
