@@ -84,19 +84,26 @@ The shortest series is 71
 ```{r}
 table <- as.data.frame(matrix(NA,0,1))
 #table <- data.frame( pear=NA,apple=NA)[numeric(0),]
-x=5
+x=3
 p=0
-while ( p<=0.99 ) {
+
+for (i in 1:500) {
+  x=3
+
+while ( p<=0.8 ) {
   x=x+2
-  p=pnbinom((x-1)/2,(x+1)/2,0.55)
-  table[x,]<-p
+  p=pnbinom((x-1)/2,(x+1)/2,0.55+0.001*i)
   
+  
+}
+  table[i,]<-x
 }
 
 table <- table %>%
   mutate(id=row_number()) %>%
   na.omit(table) 
-
+# record the stop number of the series, not the proba.
+table
 table %>%
     ggplot(aes(x=V1,y=id)) + geom_point(size=1)+geom_line() +labs(title= "Shortest series so that P(Win WS given p)>=0.8",x="Probability of the Braves winning a head-to-head matchup",y="series length") +
   scale_x_continuous(breaks = seq(0.5,1,0.1), minor_breaks = NULL,limits = c(0.5,1))
