@@ -1,0 +1,87 @@
+---
+title: "05-log-transformation"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Sorry about the quality of my homework, I think I need to get some help from our professor to finish the homework better. 
+
+## Gamma Cdf & Pdf
+```{r}
+
+
+x=seq(0.1,20,0.001)
+yvalue<-dgamma(x,3,1)
+x.mean<-mean((dgamma(x,3,1)))
+x.median<- median(dgamma(x,3,1))
+plot(x,dgamma(x,3,1),main=
+       "Gama Probability Density Function",ylab = "P",xlab = "x",type = "l") + abline(v=x.mean,col="red",labs="m") + abline(v=x.median,col="blue") 
+x.mean<-mean(pgamma(x,3,1))
+x.median<- median(pgamma(x,3,1))
+plot(x,pgamma(x,3,1),main=
+       "Gama Cumulative Distribution Function",ylab = "P",xlab = "x",type = "l") + abline(v=x.mean,col="red",labs="m") + abline(v=x.median,col="blue")
+
+x.mean<-mean((log(dgamma(x,3,1))))
+x.median<- median(log(dgamma(x,3,1)))
+plot(x,log(dgamma(x,3,1)),type = "l",main=
+       "Log Gama Probability Density Function",ylab = "P",xlab = "x") + abline(v=x.mean,col="red")+abline(v=x.median,col="blue")
+
+x.mean<-mean(log(pgamma(x,3,1)))
+x.median<- median(log(pgamma(x,3,1)))
+plot(x,log(pgamma(x,3,1)),main=
+       "log Gama Cumulative Distribution Function",ylab = "P",xlab = "x",type = "l") + abline(v=x.mean,col="red",labs="m") + abline(v=x.median,col="blue")
+#text(x.mean,"mean")
+#text(x.median,"median")
+```
+## Log Normal Cdf & Pdf
+```{r}
+x=seq(0,20,0.001)
+x.mean<-mean(dlnorm(x,-1,1))
+x.median<- median(dlnorm(x,-1,1))
+plot(x,dlnorm(x,-1,1),main=
+       "Normal Probability Density Function",ylab = "P",xlab = "x",type = "l") + abline(v=x.mean,col="red",labs="m") + abline(v=x.median,col="blue") 
+x.mean<-mean(plnorm(x,-1,1))
+x.median<- median(plnorm(x,-1,1))
+plot(x,plnorm(x,-1,1),main=
+       "Normal Cumulative Distribution Function",ylab = "P",type="l",xlab = "x") + abline(v=x.mean,col="red",labs="m") + abline(v=x.median,col="blue")
+
+x=seq(0,20,0.001)
+x.mean<-mean(log(dlnorm(x,-1,1)))
+x.median<- median(log(dlnorm(x,-1,1)))
+plot(x,log(dlnorm(x,-1,1)),main=
+       "Log Normal Probability Density Function",ylab = "P",xlab = "x",type = "l") + abline(v=x.mean,col="red",labs="m") + abline(v=x.median,col="blue") 
+x.mean<-mean(log(plnorm(x,-1,1)))
+x.median<- median(log(plnorm(x,-1,1)))
+plot(x,log(plnorm(x,-1,1)),main=
+       "Log Normal Cumulative Distribution Function",ylab = "P",type="l",xlab = "x") + abline(v=x.mean,col="red",labs="m") + abline(v=x.median,col="blue")
+#plot(x,plnorm(x,-1,1))
+```
+
+
+
+## Uniform Cdf & Pdf
+```{r}
+x=seq(0,8,0.001)
+x.mean<-mean(dunif(x,-1,1))
+x.median<- median(dunif(x,-1,1))
+plot(x,dunif(x,-1,1),main=
+       "Uniform Probability Density Function",ylab = "P",xlab = "x",type = "l") + abline(v=x.mean,col="red",labs="m") + abline(v=x.median,col="blue") 
+x.mean<-mean(punif(x,-1,1))
+x.median<- median(punif(x,-1,1))
+plot(x,punif(x,-1,1),main=
+       "Uniform Cumulative Distribution Function",ylab = "P",type="l",xlab = "x") + abline(v=x.mean,col="red",labs="m") + abline(v=x.median,col="blue")
+
+x=seq(0,8,0.001)
+x.mean<-mean(log(dunif(x,-1,1)))
+x.median<- median(log(dunif(x,-1,1)))
+plot(x,log(dunif(x,-1,1)),main=
+       "Log Uniform Probability Density Function",ylab = "P",xlab = "x",type = "l") + abline(v=x.mean,col="red",labs="m") + abline(v=x.median,col="blue") 
+x.mean<-mean(log(punif(x,-1,1)))
+x.median<- median(log(punif(x,-1,1)))
+plot(x,log(punif(x,-1,1)),main=
+       "Log Uniform Cumulative Distribution Function",ylab = "P",type="l",xlab = "x") + abline(v=x.mean,col="red",labs="m") + abline(v=x.median,col="blue")
+```
+
