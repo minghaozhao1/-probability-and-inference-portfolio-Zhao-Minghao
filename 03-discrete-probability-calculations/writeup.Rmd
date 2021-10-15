@@ -68,7 +68,7 @@ x=5
 p=0
 while ( p<=0.8 ) {
   x=x+2
-  p=pnbinom((x-1)/2,(x+1)/2,0.55)
+  p=pnbinom((x-1)/2,(x+1)/2,0.7)
   table[x,]<-p
   
 }
@@ -88,25 +88,24 @@ x=3
 p=0
 
 for (i in 1:500) {
-  x=3
-
+  x=1
 while ( p<=0.8 ) {
   x=x+2
-  p=pnbinom((x-1)/2,(x+1)/2,0.55+0.001*i)
+  p=pnbinom((x-1)/2,(x+1)/2,0.5+0.001*i)
   
   
 }
+  #print(p)
   table[i,]<-x
+  p=0.8
 }
+plot(seq(0.501,1,0.001),table$V1,type = "l", main= "Shortest series so that P(Win WS given p)>=0.8",xlab = "Probability of the Braves winning a head-to-head matchup",ylab="series length")
 
-table <- table %>%
-  mutate(id=row_number()) %>%
-  na.omit(table) 
 # record the stop number of the series, not the proba.
-table
-table %>%
-    ggplot(aes(x=V1,y=id)) + geom_point(size=1)+geom_line() +labs(title= "Shortest series so that P(Win WS given p)>=0.8",x="Probability of the Braves winning a head-to-head matchup",y="series length") +
-  scale_x_continuous(breaks = seq(0.5,1,0.1), minor_breaks = NULL,limits = c(0.5,1))
+#table
+#table %>%
+#    ggplot(aes(x=V1,y=id)) + geom_point(size=1)+geom_line() +labs(title= "Shortest series so that P(Win WS given p)>=0.8",x="Probability of the Braves winning a head-to-head matchup",y="series length") +
+#  scale_x_continuous(breaks = seq(0.5,1,0.1), minor_breaks = NULL,limits = c(0.5,1))
 
 ```
 
@@ -124,9 +123,9 @@ P(PB = 0.55|Braves win World Series in 7 games)
 =P(Braves win World Series in 7 games|PB=0.55)*0.5/(P(Braves win World Series in 7 games|0.45)*0.5+P(Braves win World Series in 7 games|0.55)*0.5)
 
 ```{r}
-pnbinom(3,4,0.55)*0.5/(pnbinom(3,4,0.55)*0.5+pnbinom(3,4,0.45)*0.5)
+dnbinom(3,4,0.55)*0.5/(dnbinom(3,4,0.55)*0.5+dnbinom(3,4,0.45)*0.5)
 ```
-use the bayes rule, we can find the equation to calculate the P(PB=0.55|Braves win World Series in 7 games). Since we assume the probability of winning have 0.5 chance for each value, we applied half of their probability when we are calculating the P(Braves win World Series in 7 games). The result is 0.6082878
+use the bayes rule, we can find the equation to calculate the P(PB=0.55|Braves win World Series in 7 games). Since we assume the probability of winning have 0.5 chance for each value, we applied half of their probability when we are calculating the P(Braves win World Series in 7 games). The result is 0.55
   
 
 
