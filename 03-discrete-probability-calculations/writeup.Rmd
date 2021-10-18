@@ -8,42 +8,54 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 ```
 ## Background
-Braves and the Yankees are teams competing in the World Series.
-the probability that the Braves win is PB and the probability that the Yankees win is PY = 1 − PB.
+
+The world series is a best-of-7 match-up between the champions of the American and National Leagues of Major League Baseball. The final winner will be awarded the Commissioner's Trophy. Braves and the Yankees are teams competing in the World Series. The team which win 4 out of the 7 games wins the series. We will using R as an analytic tool to find the prbabilities of Braves winning under multiple assumptions. 
+
+Assumption: the probability that the Braves win is PB and the probability that the Yankees win is PY = 1 − PB.
 
 1. What is the probability that the Braves win the World Series given that PB=0.55?
+
+we need to find all of the probability for Braves to win under each condition. The Braves has to win first 3 out of X games and win the last game to win the series. 
 
 probability of yankees win 0 before Braves win 4 games 
 ```{r}
 dnbinom(0,4,0.55)
 
 ```
+the probability of yankees win 0 before Braves win 4 games is 0.09150625.
 
 probability of yankees win 1 before Braves win 4 games 
 ```{r}
 dnbinom(1,4,0.55)
 
 ```
+the probability of yankees win 0 before Braves win 4 games is 0.01647113
 
 probability of yankees win 2 before Braves win 4 games 
 ```{r}
 dnbinom(2,4,0.55)
 
 ```
+the probability of yankees win 0 before Braves win 4 games is 0.1853002
 
 probability of yankees win 3 before Braves win 4 games 
 ```{r}
 dnbinom(3,4,0.55)
 
 ```
+the probability of yankees win 0 before Braves win 4 games is 0.1667701.
+
 
 probability of yankees win fewer than 3 games before Braves win 4 games 
 
 ```{r}
 pnbinom(3,4,0.55)
 ```
+We can simply use pnbinomial to find the accumulate of the probability of Braves to win for all of the conditions. By adding all the previous result together, we can get the same number. The Probability of Braves to win the series is 0.6082878.
 
 2. What is the probability that the Braves win the World Series given that PB = x? This will be a figure (see below) with PB on the x-axis and P(Braves win World Series) on the y-axis.
+
+We are assuming that we can adjust the probability for Braves to win. By changing the probability of Braves to win we can observe the probability for Braves to win the series. 
 
 ```{r}
 PB<- seq(0.55,1,0.01)
@@ -56,9 +68,11 @@ Q2 <- data_frame(PB,winning)
 ggplot(Q2,aes(x=PB,y=winning) )+ geom_point(size=1) + geom_line()+ labs(title= "Probability of winning the World Series ",x="Probability of the Braves winning a head-to-head matchup",y="Pr(Win World Series)") + scale_y_continuous(breaks = seq(0,1,0.2), minor_breaks = NULL,limits = c(0,1)) 
 
 ```
+This is the graph showing the probability of Braves winning the serie. The probability is from 0.55 to 1. We can observe the chance for Braves to win the series will increase when the prbability of winning head-to-head match is increasing. 
 
+3. Suppose one could change the World Series to be best-of-9 or some other best-of-X series. What is the shortest series length so that P(Braves win World Series|PB = .55) ≥ 0.8. 
 
-3. Suppose one could change the World Series to be best-of-9 or some other best-of-X series. What is the shortest series length so that P(Braves win World Series|PB = .55) ≥ 0.8
+We are looking for how long the series is for Braves to have a probability winning the series greater than 0.8. We can use loops to check when the probability reach our desired rate. 
 
 ```{r}
 #table<-
@@ -80,6 +94,7 @@ The shortest series is 71
 
 4. What is the shortest series length so that P(Braves win World Series|PB = x) ≥ 0.8? This will be a figure (see below) with PB on the x-axis and series length is the y-axis.
 
+For this problem, we are adjusting the probability of Braves to win for a single game. We want to know for different probability, when Braves can win the series with shortest games to have a prbability winning the series greater than 0.8. 
 
 ```{r}
 table <- as.data.frame(matrix(NA,0,1))
@@ -109,6 +124,7 @@ plot(seq(0.501,1,0.001),table$V1,type = "l", main= "Shortest series so that P(Wi
 
 ```
 
+This is the graph showing the shortest series for a team to win, win the probability P(winning a head to head match) is from 0.5 to 1 by 0.001. The shortest series for the probability greater than 0.8 is decreasing as the probability to win head-to-head match increase. When the probability is around greater than 0.8, the shortest series become 3 for all the rest of probability. 
 
 5. Calculate P(PB = 0.55|Braves win World Series in 7 games) under the assumption that either PB = 0.55 or PB = 0.45. Explain your solution.
 
