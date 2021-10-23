@@ -139,9 +139,9 @@ for (i in 1:1000) {
         b[i]=exp(mean(log(c)))
         
 }
-plot(a,b,main="geometic and arithmetic mean",xlab="Arithmetic Mean",ylab="Geometic Mean")
+plot(a,b,main="geometic and arithmetic mean for gamma distribution",xlab="Arithmetic Mean",ylab="Geometic Mean")
 abline(lm(b ~ a))
-hist(x=(a-b),main="Difference between Geometic and Arithmetic mean",xlab="Difference")
+hist(x=(a-b),main="Difference between Geometic and Arithmetic mean for gamma distribution ",xlab="Difference")
 
 ```
 
@@ -154,9 +154,9 @@ for (i in 1:1000) {
         b[i]=exp(mean(log(c)))
         
 }
-plot(a,b,main="geometic and arithmetic mean",xlab="Arithmetic Mean",ylab="Geometic Mean")
+plot(a,b,main="geometic and arithmetic mean for log normal distribution",xlab="Arithmetic Mean",ylab="Geometic Mean")
 abline(lm(b ~ a))
-hist(x=(a-b),main="Difference between Geometic and Arithmetic mean",xlab="Difference")
+hist(x=(a-b),main="Difference between Geometic and Arithmetic mean for log normal distribution",xlab="Difference")
 
 ```
 
@@ -171,24 +171,21 @@ for (i in 1:1000) {
         b[i]=exp(mean(log(c)))
         
 }
-plot(a,b,main="geometic and arithmetic mean",xlab="Arithmetic Mean",ylab="Geometic Mean")
+plot(a,b,main="geometic and arithmetic mean for uniform distribution ",xlab="Arithmetic Mean",ylab="Geometic Mean")
 abline(lm(b ~ a))
-hist(x=(a-b),main="Difference between Geometic and Arithmetic mean",xlab="Difference")
+hist(x=(a-b),main="Difference between Geometic and Arithmetic mean for uniform distribution",xlab="Difference")
 
 ```
 
-
+## part 3 
 
 ```{r}
-x=0:10
+x=seq(0,10,0.1)
 exp(log(x))
 log(exp(x))
 ```
-
-```{r}
-```
+They are always equal. Exponential to the power of log is always equal to 1. When changing the value in it, it will always keep the value of X. It just changed the order of the function, whether the exponential first or the natural log first. 
 
 
-```{r}
-```
+
 
