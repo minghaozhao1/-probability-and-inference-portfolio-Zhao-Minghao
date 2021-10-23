@@ -7,7 +7,6 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Sorry about the quality of my homework, I think I need to get some help from our professor to finish the homework better. 
 
 ## Gamma Cdf & Pdf
 ```{r}
@@ -15,48 +14,55 @@ Sorry about the quality of my homework, I think I need to get some help from our
 
 x=seq(0.1,20,0.001)
 yvalue<-dgamma(x,3,1)
-x.mean<-mean((dgamma(x,3,1)))
-x.median<- median(dgamma(x,3,1))
+x.mean<-3*1
+x.median<- qgamma(0.5,3,1)
 plot(x,dgamma(x,3,1),main=
-       "Gama Probability Density Function",ylab = "P",xlab = "x",type = "l") + abline(v=x.mean,col="red",labs="m") + abline(v=x.median,col="blue") 
-x.mean<-mean(pgamma(x,3,1))
-x.median<- median(pgamma(x,3,1))
+       "Gama Probability Density Function",ylab = "P",xlab = "x",type = "l") + abline(v=x.mean,col="red") + abline(v=x.median,col="blue") 
+legend("topright",c("mean","median"),col = c("red","blue"),lty = c(1,1))
+
+
+x.mean<-3*1
+x.median<- qgamma(0.5,3,1)
 plot(x,pgamma(x,3,1),main=
        "Gama Cumulative Distribution Function",ylab = "P",xlab = "x",type = "l") + abline(v=x.mean,col="red",labs="m") + abline(v=x.median,col="blue")
+legend("topright",c("mean","median"),col = c("red","blue"),lty = c(1,1))
 
-x.mean<-mean((log(dgamma(x,3,1))))
-x.median<- median(log(dgamma(x,3,1)))
-plot(x,log(dgamma(x,3,1)),type = "l",main=
+
+
+x <- rgamma(10000,3,1)
+x.mean<-mean(log(x))
+x.median<- median(log(x))
+plot(density(log(x)),type = "l",main=
        "Log Gama Probability Density Function",ylab = "P",xlab = "x") + abline(v=x.mean,col="red")+abline(v=x.median,col="blue")
+legend("topright",c("mean","median"),col = c("red","blue"),lty = c(1,1))
 
-x.mean<-mean(log(pgamma(x,3,1)))
-x.median<- median(log(pgamma(x,3,1)))
-plot(x,log(pgamma(x,3,1)),main=
-       "log Gama Cumulative Distribution Function",ylab = "P",xlab = "x",type = "l") + abline(v=x.mean,col="red",labs="m") + abline(v=x.median,col="blue")
+
+plot(ecdf(log(x)), main= "log Gama Cumulative Distribution Function") + abline(v=x.mean,col="red",labs="m") + abline(v=x.median,col="blue")
+legend("topright",c("mean","median"),col = c("red","blue"),lty = c(1,1))
+
 #text(x.mean,"mean")
 #text(x.median,"median")
 ```
 ## Log Normal Cdf & Pdf
 ```{r}
 x=seq(0,20,0.001)
-x.mean<-mean(dlnorm(x,-1,1))
-x.median<- median(dlnorm(x,-1,1))
+x.mean<-exp(-1 + 1/2)
+x.median<- exp(-1)
 plot(x,dlnorm(x,-1,1),main=
        "Normal Probability Density Function",ylab = "P",xlab = "x",type = "l") + abline(v=x.mean,col="red",labs="m") + abline(v=x.median,col="blue") 
-x.mean<-mean(plnorm(x,-1,1))
-x.median<- median(plnorm(x,-1,1))
+
 plot(x,plnorm(x,-1,1),main=
        "Normal Cumulative Distribution Function",ylab = "P",type="l",xlab = "x") + abline(v=x.mean,col="red",labs="m") + abline(v=x.median,col="blue")
 
-x=seq(0,20,0.001)
-x.mean<-mean(log(dlnorm(x,-1,1)))
-x.median<- median(log(dlnorm(x,-1,1)))
-plot(x,log(dlnorm(x,-1,1)),main=
-       "Log Normal Probability Density Function",ylab = "P",xlab = "x",type = "l") + abline(v=x.mean,col="red",labs="m") + abline(v=x.median,col="blue") 
-x.mean<-mean(log(plnorm(x,-1,1)))
-x.median<- median(log(plnorm(x,-1,1)))
-plot(x,log(plnorm(x,-1,1)),main=
-       "Log Normal Cumulative Distribution Function",ylab = "P",type="l",xlab = "x") + abline(v=x.mean,col="red",labs="m") + abline(v=x.median,col="blue")
+#x=seq(0,20,0.001)
+
+x.mean<-mean(log(rlnorm(1000,-1,1)))
+x.median<- median(log(rlnorm(1000,-1,1)))
+plot(density(log(rlnorm(1000,-1,1))),main=
+       "Log Normal Probability Density Function",type = "l") + abline(v=x.mean,col="red",labs="m") + abline(v=x.median,col="blue") 
+
+plot(ecdf(log(rlnorm(1000,-1,1))),main=
+       "Log Normal Cumulative Distribution Function",ylab = "P",xlab = "x") + abline(v=x.mean,col="red",labs="m") + abline(v=x.median,col="blue")
 #plot(x,plnorm(x,-1,1))
 ```
 
@@ -64,24 +70,48 @@ plot(x,log(plnorm(x,-1,1)),main=
 
 ## Uniform Cdf & Pdf
 ```{r}
-x=seq(0,8,0.001)
-x.mean<-mean(dunif(x,-1,1))
-x.median<- median(dunif(x,-1,1))
-plot(x,dunif(x,-1,1),main=
+x=seq(0,20,0.001)
+x.mean<-(0+12)/2
+x.median<- (0+12)/2
+plot(x,dunif(x,0,12),main=
        "Uniform Probability Density Function",ylab = "P",xlab = "x",type = "l") + abline(v=x.mean,col="red",labs="m") + abline(v=x.median,col="blue") 
-x.mean<-mean(punif(x,-1,1))
-x.median<- median(punif(x,-1,1))
-plot(x,punif(x,-1,1),main=
-       "Uniform Cumulative Distribution Function",ylab = "P",type="l",xlab = "x") + abline(v=x.mean,col="red",labs="m") + abline(v=x.median,col="blue")
+legend("topright",c("mean","median"),col = c("red","blue"),lty = c(1,1))
 
-x=seq(0,8,0.001)
-x.mean<-mean(log(dunif(x,-1,1)))
-x.median<- median(log(dunif(x,-1,1)))
-plot(x,log(dunif(x,-1,1)),main=
-       "Log Uniform Probability Density Function",ylab = "P",xlab = "x",type = "l") + abline(v=x.mean,col="red",labs="m") + abline(v=x.median,col="blue") 
-x.mean<-mean(log(punif(x,-1,1)))
-x.median<- median(log(punif(x,-1,1)))
-plot(x,log(punif(x,-1,1)),main=
-       "Log Uniform Cumulative Distribution Function",ylab = "P",type="l",xlab = "x") + abline(v=x.mean,col="red",labs="m") + abline(v=x.median,col="blue")
+plot(x,punif(x,0,12),main=
+       "Uniform Cumulative Distribution Function",ylab = "P",type="l",xlab = "x") + abline(v=x.mean,col="red",labs="m") + abline(v=x.median,col="blue")
+legend("topright",c("mean","median"),col = c("red","blue"),lty = c(1,1))
+
+x=seq(0,20,0.001)
+x.mean<-mean(log(runif(1000,0,12)))
+x.median<- median(log(runif(1000,0,12)))
+plot(density(log(runif(1000,0,12))),main=
+       "Log Uniform Probability Density Function") + abline(v=x.mean,col="red") + abline(v=x.median,col="blue") 
+legend("topright",c("mean","median"),col = c("red","blue"),lty = c(1,1))
+
+
+plot(ecdf(log(runif(1000,0,12))),main=
+       "Log Uniform Cumulative Distribution Function",ylab = "P",xlab = "x") + abline(v=x.mean,col="red") + abline(v=x.median,col="blue")
+legend("topright",c("mean","median"),col = c("red","blue"),lty = c(1,1))
+
+```
+```{r}
+a<-rep(NA,1000)
+b<-rep(NA,1000)
+for (i in 1:1000) {
+        c=rgamma(100,3,1)
+        a[i]=mean(c)
+        b[i]=exp(mean(log(c)))
+        
+}
+plot(a,b,main="geometic and arithmetic mean",xlab="Arithmetic Mean",ylab="Geometic Mean")
+abline(lm(b ~ a))
+hist(x=(a-b),main="Difference between Geometic and Arithmetic mean",xlab="Difference")
+
+```
+
+```{r}
+x=0:10
+exp(log(x))
+log(exp(x))
 ```
 
