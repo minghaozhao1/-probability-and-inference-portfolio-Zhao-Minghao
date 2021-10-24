@@ -1,0 +1,92 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(tidyverse)
+library(dplyr)
+```
+
+
+Begin with the median from a sample of N = 200 from the standard normal distribution. Write an R function that is the density function for the median in this sample. Note that the 100th order statistic is approximately the median, and use the order statistic formula discussed in class. Generate a plot of the function.
+```{r}
+dorder <- function(x){
+  100*
+  choose(200,100)*
+  (pnorm(x))^(100-1)*
+  (1-pnorm(x))^(200-100)*
+  dnorm(x)
+}
+curve(
+    dorder(x)
+  , -0.5
+  , 0.5
+  , xlab = parse(text="X[(3)]")
+  , ylab = "Density"
+  , main="Density for Median"
+)
+```
+
+
+```{r}
+porder <- function(x){
+  pbinom(100-1, 200, pnorm(x), lower.tail = FALSE)
+}
+curve(
+    porder(x)
+  , -0.5
+  , 0.5
+  , xlab = parse(text="X[(3)]")
+  , ylab = "Probability"
+  , main="Probability for Median"
+)
+```
+```{r}
+
+data <- data.frame(x=seq(-0.5,0.5,by=0.001)) %>%
+  mutate(p=porder(x))
+qf1 <- approxfun(data$p,data$x)
+qf1(0.7)
+curve(qf1,0.05,0.95,, main="Quantile for Median",xlab = "p",ylab = "Quantile")
+```
+
+
+```{r}
+median_bmi <- rep(NA, 5000)
+for(i in seq_along(median_bmi)){
+  bmi <- rnorm(200)
+  median_bmi[i] <- median(bmi)
+}
+plot(ecdf(median_bmi),xlab = parse(text = "CDF~median"))
+curve(porder(x),-0.5,0.5,add = TRUE)
+```
+```{r}
+median_bmi <- rep(NA, 5000)
+for(i in seq_along(median_bmi)){
+  bmi <- rnorm(200)
+  median_bmi[i] <- median(bmi)
+}
+hist(median_bmi,breaks = 100,freq = FALSE)
+curve(dorder(x),add = TRUE)
+```
+
+```{r}
+p <-ppoints(200)
+median_bmi <- rep(NA, 5000)
+for(i in seq_along(median_bmi)){
+  bmi <- rnorm(200)
+  median_bmi[i] <- median(bmi)
+}
+
+x<-qf1(p)
+y<-quantile(median_bmi,probs = p)
+plot(x,y)
+abline(0,1)
+```
+
