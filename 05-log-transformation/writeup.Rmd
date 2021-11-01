@@ -17,7 +17,7 @@ yvalue<-dgamma(x,3,1)
 x.mean<-3*1
 x.median<- qgamma(0.5,3,1)
 plot(x,dgamma(x,3,1),main=
-       "Gama Probability Density Function",ylab = "P",xlab = "x",type = "l") + abline(v=x.mean,col="red") + abline(v=x.median,col="blue") 
+       "Gamma Probability Density Function",ylab = "P",xlab = "x",type = "l") + abline(v=x.mean,col="red") + abline(v=x.median,col="blue") 
 legend("topright",c("mean","median"),col = c("red","blue"),lty = c(1,1))
 
 ```
@@ -140,7 +140,7 @@ for (i in 1:1000) {
         
 }
 plot(a,b,main="geometic and arithmetic mean for gamma distribution",xlab="Arithmetic Mean",ylab="Geometic Mean")
-abline(lm(b ~ a))
+abline(0,1)
 hist(x=(a-b),main="Difference between Geometic and Arithmetic mean for gamma distribution ",xlab="Difference")
 
 ```
@@ -155,7 +155,7 @@ for (i in 1:1000) {
         
 }
 plot(a,b,main="geometic and arithmetic mean for log normal distribution",xlab="Arithmetic Mean",ylab="Geometic Mean")
-abline(lm(b ~ a))
+abline(0,1)
 hist(x=(a-b),main="Difference between Geometic and Arithmetic mean for log normal distribution",xlab="Difference")
 
 ```
@@ -172,7 +172,7 @@ for (i in 1:1000) {
         
 }
 plot(a,b,main="geometic and arithmetic mean for uniform distribution ",xlab="Arithmetic Mean",ylab="Geometic Mean")
-abline(lm(b ~ a))
+abline(0,1)
 hist(x=(a-b),main="Difference between Geometic and Arithmetic mean for uniform distribution",xlab="Difference")
 
 ```
@@ -180,12 +180,30 @@ hist(x=(a-b),main="Difference between Geometic and Arithmetic mean for uniform d
 ## part 3 
 
 ```{r}
-x=seq(0,10,0.1)
-exp(log(x))
-log(exp(x))
-```
-They are always equal. Exponential to the power of log is always equal to 1. When changing the value in it, it will always keep the value of X. It just changed the order of the function, whether the exponential first or the natural log first. 
+relationship <- function(sample,size){
+  a<-rep(NA,size)
+  b<-rep(NA,size)
+  diff<-rep(NA,size)
+  c<-NA
+  for (i in 1:size) {
+    c=sample(sample,size,replace = TRUE)
+    a[i]=log(mean(c))
+    b[i]=mean(log(c))
+    diff[i]=a[i]-b[i]
+  }
+  mean(diff)
+  #diff
+  }
+relationship(1000,100)
 
+
+
+
+
+
+
+```
+By running this simulation, we can see that they are not equal. Since the mean difference is positive, the log (E[X]) is greater than E[log (X)]. This simulation has ran for a 100 samples of size 1000. The diff is the difference between those two value. 
 
 
 
