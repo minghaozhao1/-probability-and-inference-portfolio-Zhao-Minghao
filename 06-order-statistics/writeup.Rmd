@@ -63,7 +63,7 @@ for(i in seq_along(median_bmi)){
   bmi <- rnorm(200)
   median_bmi[i] <- median(bmi)
 }
-plot(ecdf(median_bmi),xlab = parse(text = "CDF~median"))
+plot(ecdf(median_bmi),xlab = parse(text = "CDF~median"),col="blue")
 curve(porder(x),-0.5,0.5,add = TRUE)
 ```
 ```{r}
@@ -88,5 +88,18 @@ x<-qf1(p)
 y<-quantile(median_bmi,probs = p)
 plot(x,y)
 abline(0,1)
+```
+
+```{r}
+x<-rep(NA,100)
+y
+for (i in 1:100) {
+  x[i]=0
+  y
+  while (x[i]<20) {
+      x[i]=x[i]+sample(1:6,1)
+
+  }
+}
 ```
 

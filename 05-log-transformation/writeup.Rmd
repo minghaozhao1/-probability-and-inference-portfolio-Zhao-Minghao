@@ -7,6 +7,16 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+## For each distribution below, generate a figure of the PDF and CDF. Mark the mean and median in the figure.
+
+## For each distribution below, generate a figure of the PDF and CDF of the transformation Y = log(X) random variable. Mark the mean and median in the figure. You may use simulation or analytic methods in order find the PDF and CDF of the transformation.
+
+##  For each of the distributions below, generate 1000 samples of size 100. For each sample, calculate the geometric and arithmetic mean. Generate a scatter plot of the geometic and arithmetic sample means. Add the line of identify as a reference line.
+
+## Generate a histogram of the difference between the arithmetic mean and the geometric mean.
+
+
+
 
 ## Gamma Cdf & Pdf
 ```{r}
@@ -111,7 +121,7 @@ plot(x,punif(x,0,12),main=
        "Uniform Cumulative Distribution Function",ylab = "P",type="l",xlab = "x") + abline(v=x.mean,col="red",labs="m") + abline(v=x.median,col="blue")
 legend("topright",c("mean","median"),col = c("red","blue"),lty = c(1,1))
 ```
-
+This is the CDF for uniform distribution 
 
 ```{r}
 x=seq(0,20,0.001)
@@ -122,7 +132,7 @@ plot(density(log(runif(1000,0,12))),main=
 legend("topright",c("mean","median"),col = c("red","blue"),lty = c(1,1))
 
 ```
-
+This is the PDF for log uniform distribution.
 
 ```{r}
 plot(ecdf(log(runif(1000,0,12))),main=
@@ -130,6 +140,9 @@ plot(ecdf(log(runif(1000,0,12))),main=
 legend("topright",c("mean","median"),col = c("red","blue"),lty = c(1,1))
 
 ```
+
+This the CDF for log uniform distribution. 
+
 ```{r}
 a<-rep(NA,1000)
 b<-rep(NA,1000)
@@ -144,6 +157,7 @@ abline(0,1)
 hist(x=(a-b),main="Difference between Geometic and Arithmetic mean for gamma distribution ",xlab="Difference")
 
 ```
+In this section, we used a loop to simulate the situation. It has a 1000 samples of size 100. Both the geometric and arithmetic mean is ploted in the same graph. The X is arithmetic mean and the y is geometic mean. The histogram shows the difference between them for each individual value. 
 
 ```{r}
 a<-rep(NA,1000)
@@ -160,6 +174,7 @@ hist(x=(a-b),main="Difference between Geometic and Arithmetic mean for log norma
 
 ```
 
+In this section, we used a loop to simulate the situation. It has a 1000 samples of size 100. Both the geometric and arithmetic mean is ploted in the same graph. The X is arithmetic mean and the y is geometic mean. The histogram shows the difference between them for each individual value. 
 
 
 ```{r}
@@ -176,6 +191,8 @@ abline(0,1)
 hist(x=(a-b),main="Difference between Geometic and Arithmetic mean for uniform distribution",xlab="Difference")
 
 ```
+In this section, we used a loop to simulate the situation. It has a 1000 samples of size 100. Both the geometric and arithmetic mean is ploted in the same graph. The X is arithmetic mean and the y is geometic mean. The histogram shows the difference between them for each individual value. 
+
 
 ## part 3 
 
@@ -191,19 +208,20 @@ relationship <- function(sample,size){
     b[i]=mean(log(c))
     diff[i]=a[i]-b[i]
   }
-  mean(diff)
-  #diff
+  #mean(diff)
+  diff
   }
 relationship(1000,100)
 
 
-
-
-
+d<-rep(1,100)
+e=log(mean(d))
+f=mean(log(d))
+e == f
 
 
 ```
-By running this simulation, we can see that they are not equal. Since the mean difference is positive, the log (E[X]) is greater than E[log (X)]. This simulation has ran for a 100 samples of size 1000. The diff is the difference between those two value. 
+By running this simulation, we can see that they are not equal. By looking at the result, all of the simulations are positive, the log (E[X]) is greater than E[log (X)]. This simulation has ran for a 100 samples of size 1000. The diff is the difference between those two value. For a special condition that all of the values are 1, both the log (E[X]) and E[log (X)] will return 0, which means they are equal. For conclusion, log (E[X]) is laways greater or equal to E[log (X)].
 
 
 
