@@ -64,7 +64,7 @@ for(i in seq_along(median_bmi)){
   median_bmi[i] <- median(bmi)
 }
 plot(ecdf(median_bmi),xlab = parse(text = "CDF~median"),col="blue")
-curve(porder(x),-0.5,0.5,add = TRUE)
+curve(porder(x),-0.5,0.5,add = TRUE, col="red")
 ```
 ```{r}
 median_bmi <- rep(NA, 5000)
@@ -73,7 +73,7 @@ for(i in seq_along(median_bmi)){
   median_bmi[i] <- median(bmi)
 }
 hist(median_bmi,breaks = 100,freq = FALSE)
-curve(dorder(x),add = TRUE)
+curve(dorder(x),add = TRUE,col="red")
 ```
 
 ```{r}
@@ -91,15 +91,94 @@ abline(0,1)
 ```
 
 ```{r}
-x<-rep(NA,100)
-y
-for (i in 1:100) {
-  x[i]=0
-  y
-  while (x[i]<20) {
-      x[i]=x[i]+sample(1:6,1)
-
-  }
+dorder <- function(x,k){
+  k*
+  choose(200,k)*
+  (pnorm(x))^(k-1)*
+  (1-pnorm(x))^(200-k)*
+  dnorm(x)
 }
+```
+
+```{r}
+porder <- function(x,k){
+  pbinom(k-1, 200, pnorm(x), lower.tail = FALSE)
+}
+```
+
+
+```{r}
+qorder <- function(p,k) {
+  tmp <- function(x,k){porder(x,k)-p}
+  out<-p*0
+  for (i in seq_along(p)) {
+    out[i] <- uniroot(tmp,c(-5,10),p=p[i])$root
+    
+  }
+  out
+}
+
+```
+
+
+```{r}
+M <- 5000 # studies
+N <- 200 # sample size
+b <- array(rnorm(M*N), c(M, N))
+max <- b %>% apply(1, function(x){sort(x)[200]})
+
+qmax <- function(p) {
+  tmp <- function(x,p){porder(x,200)-p}
+  out<-p*0
+  for (i in seq_along(p)) {
+    out[i] <- uniroot(tmp,c(-5,10),p=p[i])$root
+    
+  }
+  out
+}
+
+x<-qmax((1:199)/200)
+y <- quantile(max, probs = (1:199)/200,na.rm = TRUE)
+#rg <- range(x, y, na.rm=T)
+qqplot(x,y,asp=1)
+abline(0,1)
+
+
+```
+
+
+
+```{r}
+dorder <- function(x,k,n,dist,...){
+  pf <- eval(parse(text=paste0("p" ,dist)))
+  df <- eval(parse(text=paste0("d" , dist)))
+  k*
+    choose(n,k)*
+    (pf(x, ...))^(k-1)*
+    (1-pf(x, ...))^(n-k)*
+    df(x, ...)
+}
+
+porder <- function(x,k,n,dist,...){
+  pf <- eval(parse(text=paste0("p" ,dist)))
+  pbinom(k-1, n, pf(x,...), lower.tail = FALSE)
+}
+
+qorder <- function(p,k,dist,...) {
+  tmp <- function(x,p){porder(x,k,dist,...)-p}
+  out<-p*0
+  for (i in seq_along(p)) {
+    out[i] <- uniroot(tmp,c(-100,100),p=p[i])$root
+    
+  }
+  out
+}
+
+
+```
+
+```{r}
+curve(porder(x, 1, 200, "norm"), -5, 0)
+curve(dorder(x, 1, 200, "norm"), -5, 0)
 ```
 
