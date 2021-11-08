@@ -1,0 +1,492 @@
+---
+title: "writeup"
+name: "Minghao Zhao"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+In this blog, I will write a tutorial about how to use MLE and MM to model (a) Glycohemoglobin and (b) Height of adult females. The data will be from National Health and Nutrition Examination Survey 2009-2010 (NHANES), available from the Hmisc package. I will compare and contrast the two methods in addition to comparing and contrasting the choice of underlying distribution.
+
+1. calculated estimates of parameters 
+2. visualization of distributions
+    a.Overlay estimated pdf onto histogram
+    b.Overlay estimated CDF onto eCDF
+    c.QQ plot (sample vs estimated dist)
+3. calculated the median from the estimated distribtuion. 
+
+
+below is the code to get the data set. First to get the data from Hmisc package. The column Glycohemoglobin and height is extracted, the column name is gh and ht. 
+```{r}
+require(dplyr)
+Hmisc::getHdata(nhgh)
+d1 <- nhgh %>% 
+  filter(sex == "female") %>% 
+  filter(age >= 18) %>% 
+  select(gh, ht) %>% 
+  filter(1:n()<=1000)
+```
+
+
+1. Glycohemoglobin
+
+a. MM
+i. estimate of parameters 
+```{r}
+mm_nor_mean=mean(d1$gh)
+mm_nor_sd=sd(d1$gh)
+mm_ga_shape<-mean(d1$gh)^2/var(d1$gh)
+mm_ga_scale<-var(d1$gh)/mean(d1$gh)
+mm_web_shape<-1.2785*(mean(d1$gh)/sd(d1$gh)-0.5004)
+mm_web_scale<- mean(d1$gh)/(gamma(1+1/mm_web_shape))
+
+```
+above is the code to find the parameter of each distribution. For normal distribution, we find the mean and stand deviation. For gamma distribtuion, we find the shape and scale, which is mean^2/var. For weibull distribtuion, we can the shape and scale too. The shape function is 1.2785*(mean(d1$gh)/sd(d1$gh)-0.5004), and the scale function is mean(d1$gh)/(gamma(1+1/mm_web_shape)
+
+
+ii. overlay estimated pdf onto histogram
+
+```{r}
+hist(d1$gh,freq = FALSE,breaks = 100,main="Glycohemoglobin(MM)",xlab = "gh",ylab = "Density")
+curve(dnorm(x,mm_nor_mean,mm_nor_sd),add = TRUE,col="blue")
+curve(dgamma(x,shape = mm_ga_shape,scale = mm_ga_scale),add = TRUE,col="red")
+curve(dweibull(x,mm_web_shape,mm_web_scale),add = TRUE,col="green")
+abline(v=median(d1$gh),col="red",lwd=3)
+abline(v=qnorm(0.5,mm_nor_mean,mm_nor_sd),col="yellow",lwd=3)
+abline(v=qgamma(0.5,shape=mm_ga_shape,scale=mm_ga_scale),col="blue",lwd=3)
+abline(v=qweibull(0.5,shape=mm_web_shape,scale=mm_web_scale),col="green",lwd=3)
+
+```
+This is the hisgram based on gh. The three types of distribution are overlaid to the same graph.we can see that the estimated pdf of data gh does not fit to the pdf. 
+
+iii. overlay estimated CDF onto eCDF
+
+```{r}
+plot(ecdf(d1$gh),main="Glycohemoglobin(MM)",xlab = "gh",ylab = "CDF")
+curve(pnorm(x,mm_nor_mean,mm_nor_sd),add = TRUE,col="red")
+curve(pgamma(x,shape=mm_ga_shape,scale=mm_ga_scale),add=TRUE,col="blue")
+curve(pweibull(x,shape = mm_web_shape,scale = mm_web_scale),add=TRUE,col="green")
+```
+This is the CDF of the gh. The three types of distribtuion are overlaid to the same graph. We can see the estimated CDF of gh data does not fit to the pdf. 
+
+iv. QQ plot
+
+```{r}
+ps <- ppoints(1000)
+theoretical <- qnorm(ps, mm_nor_mean, mm_nor_sd)
+sample <- quantile(d1$gh, ps)
+plot(theoretical, sample,main="QQ Plot for normal distribution",ylab="sample",xlab="theoretical")
+abline(0,1)
+```
+This is the qq plot of the gh in normal distribution. The points are sample and theoretical quantiles. the line is y=x. The result is obvious that sample doesn't fall into the theoretical quantile
+
+```{r}
+ps <- ppoints(1000)
+theoretical <- qgamma(ps, shape = mm_ga_shape, scale = mm_ga_scale)
+sample <- quantile(d1$gh, ps)
+plot(theoretical, sample,main="QQ Plot for gamma distribution", ylab="sample", xlab="theoretical")
+abline(0,1)
+```
+This is the qq plot of the gh in gamma distribution. The points are sample and theoretical quantiles. the line is y=x. The result is obvious that sample doesn't fall into the theoretical quantile
+
+```{r}
+
+ps <- ppoints(1000)
+theoretical <- qweibull(ps, shape = mm_web_shape, scale = mm_web_scale)
+sample <- quantile(d1$gh, ps)
+plot(theoretical, sample,main="QQ Plot for weibull distribution", ylab="sample", xlab="theoretical")
+abline(0,1)
+
+```
+This is the qq plot of the gh in weibull distribution. The points are sample and theoretical quantiles. the line is y=x. The result is obvious that sample doesn't fall into the theoretical quantile
+
+
+
+
+
+
+
+v. estimated median
+b. MLE
+i. estimate of parameters 
+
+
+
+```{r}
+require(stats4)
+nLL <- function(mean, sd){
+  fs <- dnorm(
+        x = d1$gh
+      , mean = mean
+      , sd = sd
+      , log = TRUE
+    ) 
+  -sum(fs)
+}
+fit <- mle(
+    nLL
+  , start = list(mean = 1, sd = 1)
+  , method = "L-BFGS-B"
+  , lower = c(0, 0.01)
+)
+nLL1 <- function(shape, scale){
+  fs <- dgamma(
+        x = d1$gh
+      , shape = shape
+      , scale = scale
+      , log = TRUE
+    ) 
+  -sum(fs)
+}
+fit1 <- mle(
+    nLL1
+  , start = list(shape = 1, scale = 1)
+  , method = "L-BFGS-B"
+  , lower = c(0, 0.01)
+)
+
+
+
+
+
+nLL2 <- function(shape, scale){
+  fs <- dweibull(
+        x = d1$gh
+      , shape = shape
+      , scale = scale
+      , log = TRUE
+    ) 
+  -sum(fs)
+}
+fit2 <- mle(
+    nLL2
+  , start = list(shape = 1, scale = 1)
+  , method = "L-BFGS-B"
+  , lower = c(0, 0.01)
+)
+#par(mfrow = c(1,2)); plot(profile(fit), absVal = FALSE)
+#par(mfrow = c(1,2))
+```
+This is the MLE model. We have to define it before we can esitmate. 
+ii. overlay estimated CDF onto eCDF
+
+```{r}
+plot(ecdf(d1$gh), main="Glycohemoglobin(MLE)",xlab = "gh",ylab = "Density")
+curve(
+    pnorm(x, coef(fit)[1], coef(fit)[2])
+  , add = TRUE
+  , col = "blue"
+  , lwd = 3
+)
+curve(
+    pgamma(x, shape=coef(fit1)[1], scale=coef(fit1)[2])
+  , add = TRUE
+  , col = "red"
+  , lwd = 3
+)
+curve(
+    pweibull(x, coef(fit2)[1], coef(fit2)[2])
+  , add = TRUE
+  , col = "green"
+  , lwd = 3
+)
+```
+This is the cdf overlay to ecdf. The three types of distribution has been shown in the graph. The reuslt is better than MM model, but it still doesn't fit well. 
+
+iii. overlay estimated pdf onto histogram
+```{r}
+hist(d1$gh, freq = FALSE,breaks = 100 ,main="Glycohemoglobin(MLE)",xlab = "gh",ylab = "CDF")
+curve(
+    dnorm(x, coef(fit)[1], coef(fit)[2])
+  , add = TRUE
+  , col = "blue"
+  , lwd = 3
+)
+
+curve(
+    dgamma(x, shape=coef(fit1)[1], scale=coef(fit1)[2])
+  , add = TRUE
+  , col = "red"
+  , lwd = 3
+)
+curve(
+    dweibull(x,shape =  coef(fit2)[1], scale=coef(fit2)[2])
+  , add = TRUE
+  , col = "green"
+  , lwd = 3
+)
+abline(v=qnorm(0.5,coef(fit)[1],coef(fit)[2]),col="yellow",lwd=3)
+abline(v=qgamma(0.5,shape=coef(fit1)[1],scale=coef(fit1)[2]),col="blue",lwd=3)
+abline(v=qweibull(0.5,shape=coef(fit2)[1],scale=coef(fit2)[2]),col="green",lwd=3)
+
+
+```
+This is the pdf overlay the histogram.  The three types of distribution has been shown in the graph. The reuslt is better than MM model, but it still doesn't fit well. 
+
+iv. QQ plot
+v. estimated median
+
+```{r}
+
+ps <- ppoints(1000)
+theoretical <- qnorm(ps, mean=coef(fit)[1], sd=coef(fit)[2])
+sample <- quantile(d1$gh, ps)
+plot(theoretical, sample,main="QQ Plot for normal distribution",ylab="sample",xlab="theoretical")
+abline(0,1)
+
+ps <- ppoints(1000)
+theoretical <- qgamma(ps, shape=coef(fit1)[1], scale=coef(fit1)[2])
+sample <- quantile(d1$gh, ps)
+plot(theoretical, sample,main="QQ Plot for gamma distribution",ylab="sample",xlab="theoretical")
+abline(0,1)
+
+ps <- ppoints(1000)
+theoretical <- qweibull(ps, shape=coef(fit2)[1], scale=coef(fit2)[2])
+sample <- quantile(d1$gh, ps)
+plot(theoretical, sample,main="QQ Plot for weibull distribution",ylab="sample",xlab="theoretical")
+abline(0,1)
+
+
+
+```
+These are the QQ plot for three types of the distribution. It is same as the MM model, the sample does not fall into theoretical, which cause the plot doesn't match the line y=x. 
+
+
+
+
+
+
+
+
+2. height 
+a. MM
+i. estimate of parameters 
+```{r}
+mm_nor_mean=mean(d1$ht)
+mm_nor_sd=sd(d1$ht)
+mm_ga_shape<-mean(d1$ht)^2/var(d1$ht)
+mm_ga_scale<-var(d1$ht)/mean(d1$ht)
+mm_web_shape<-1.2785*(mean(d1$ht)/sd(d1$ht)-0.5004)
+mm_web_scale<- mean(d1$ht)/(gamma(1+1/mm_web_shape))
+
+```
+above is the code to find the parameter of each distribution. For normal distribution, we find the mean and stand deviation. For gamma distribtuion, we find the shape and scale, which is mean^2/var. For weibull distribtuion, we can the shape and scale too. The shape function is 1.2785*(mean(d1$ht)/sd(d1$ht)-0.5004), and the scale function is mean(d1$ht)/(gamma(1+1/mm_web_shape)
+
+
+
+ii. overlay estimated pdf onto histogram
+
+```{r}
+hist(d1$ht,freq = FALSE,breaks = 100,main="Height(MM)",xlab = "height",ylab = "Density")
+curve(dnorm(x,mm_nor_mean,mm_nor_sd),add = TRUE,col="blue")
+curve(dgamma(x,shape = mm_ga_shape,scale = mm_ga_scale),add = TRUE,col="red")
+curve(dweibull(x,mm_web_shape,mm_web_scale),add = TRUE,col="green")
+abline(v=median(d1$ht),col="red",lwd=3)
+abline(v=qnorm(0.5,mm_nor_mean,mm_nor_sd),col="yellow",lwd=3)
+abline(v=qgamma(0.5,shape=mm_ga_shape,scale=mm_ga_scale),col="blue",lwd=3)
+abline(v=qweibull(0.5,shape=mm_web_shape,scale=mm_web_scale),col="green",lwd=3)
+```
+This is the hisgram based on ht. The three types of distribution are overlaid to the same graph.we can see unlike the gh data, the height data falls into the PDF for most of the part. 
+
+
+
+iii. overlay estimated CDF onto eCDF
+
+```{r}
+plot(ecdf(d1$ht),main="Height(MM)",xlab = "height",ylab = "CDF")
+curve(pnorm(x,mm_nor_mean,mm_nor_sd),add = TRUE,col="red")
+curve(pgamma(x,shape=mm_ga_shape,scale=mm_ga_scale),add=TRUE,col="blue")
+curve(pweibull(x,shape = mm_web_shape,scale = mm_web_scale),add=TRUE,col="green")
+```
+This is the CDF of the height. The three types of distribtuion are overlaid to the same graph. We can see the estimated CDF of height data almost match exactly like the ecdf. 
+
+
+iv. QQ plot
+
+```{r}
+ps <- ppoints(1000)
+theoretical <- qnorm(ps, mm_nor_mean, mm_nor_sd)
+sample <- quantile(d1$ht, ps)
+plot(theoretical, sample,,main="QQ Plot for normal distribution", ylab="sample", xlab="theoretical")
+abline(0,1)
+```
+This is the qq plot of the gh in normal distribution. The points are sample and theoretical quantiles. the line is y=x. The result is obvious that sample fall into the theoretical quantile. The qqplot has block the line y=x. 
+
+
+```{r}
+ps <- ppoints(1000)
+theoretical <- qgamma(ps, shape = mm_ga_shape, scale = mm_ga_scale)
+sample <- quantile(d1$ht, ps)
+plot(theoretical, sample,main="QQ Plot for gamma distribution", ylab="sample", xlab="theoretical")
+abline(0,1)
+```
+This is the qq plot of the gh in gamma distribution. The points are sample and theoretical quantiles. the line is y=x. The result is obvious that sample fall into the theoretical quantile. The qqplot has block the line y=x. 
+
+
+
+```{r}
+
+ps <- ppoints(1000)
+theoretical <- qweibull(ps, shape = mm_web_shape, scale = mm_web_scale)
+sample <- quantile(d1$ht, ps)
+plot(theoretical, sample,main="QQ Plot for weibull distribution", ylab="sample", xlab="theoretical")
+abline(0,1)
+
+```
+This is the qq plot of the gh in normal distribution. The points are sample and theoretical quantiles. the line is y=x. the result for weibull distribution is different than normal and gamma distribtuion. The majority part of the cdf falls on cdf. The beginning and ending doesn't follow. 
+
+b. MLE
+i. estimate of parameters 
+
+```{r}
+require(stats4)
+nLL <- function(mean, sd){
+  fs <- dnorm(
+        x = d1$ht
+      , mean = mean
+      , sd = sd
+      , log = TRUE
+    ) 
+  -sum(fs)
+}
+fit <- mle(
+    nLL
+  , start = list(mean = 1, sd = 1)
+  , method = "L-BFGS-B"
+  , lower = c(0, 0.01)
+)
+nLL1 <- function(shape, scale){
+  fs <- dgamma(
+        x = d1$ht
+      , shape = shape
+      , scale = scale
+      , log = TRUE
+    ) 
+  -sum(fs)
+}
+fit1 <- mle(
+    nLL1
+  , start = list(shape = 1, scale = 1)
+  , method = "L-BFGS-B"
+  , lower = c(0, 0.01)
+)
+
+
+
+
+
+nLL2 <- function(shape, scale){
+  fs <- dweibull(
+        x = d1$ht
+      , shape = shape
+      , scale = scale
+      , log = TRUE
+    ) 
+  -sum(fs)
+}
+fit2 <- mle(
+    nLL2
+  , start = list(shape = 1, scale = 1)
+  , method = "L-BFGS-B"
+  , lower = c(0, 0.01)
+)
+#par(mfrow = c(1,2)); plot(profile(fit), absVal = FALSE)
+#par(mfrow = c(1,2))
+```
+This is the MLE model. We have to define it before we can esitmate. 
+
+
+ii. overlay estimated CDF onto eCDF
+
+```{r}
+plot(ecdf(d1$ht),main="Height(MLE)",xlab = "height",ylab = "CDF")
+curve(
+    pnorm(x, mean = coef(fit)[1], sd =coef(fit)[2])
+  , add = TRUE
+  , col = "blue"
+  , lwd = 5
+)
+curve(
+    pgamma(x, shape=coef(fit1)[1], scale=coef(fit1)[2])
+  , add = TRUE
+  , col = "red"
+  , lwd = 3
+)
+curve(
+    pweibull(x, coef(fit2)[1], coef(fit2)[2])
+  , add = TRUE
+  , col = "green"
+  , lwd = 3
+)
+```
+This is the cdf overlay to ecdf. The three types of distribution has been shown in the graph. The reuslt is same as the MM model, all of the cdf match with the ecdf. 
+
+
+iii. overlay estimated pdf onto histogram
+
+
+```{r}
+hist(d1$ht, freq = FALSE,breaks=100,main="Height(MLE)",xlab = "height",ylab = "Density")
+curve(
+    dnorm(x, mean = coef(fit)[1], sd =coef(fit)[2])
+  , add = TRUE
+  , col = "blue"
+  , lwd = 3
+)
+
+curve(
+    dgamma(x, shape=coef(fit1)[1], scale=coef(fit1)[2])
+  , add = TRUE
+  , col = "red"
+  , lwd = 3
+)
+curve(
+    dweibull(x,shape =  coef(fit2)[1], scale=coef(fit2)[2])
+  , add = TRUE
+  , col = "green"
+  , lwd = 3
+)
+abline(v=qnorm(0.5,coef(fit)[1],coef(fit)[2]),col="yellow",lwd=3)
+abline(v=qgamma(0.5,shape=coef(fit1)[1],scale=coef(fit1)[2]),col="blue",lwd=3)
+abline(v=qweibull(0.5,shape=coef(fit2)[1],scale=coef(fit2)[2]),col="green",lwd=3)
+
+
+
+
+
+```
+This is the pdf overlay the histogram.  The three types of distribution has been shown in the graph. The reuslt is same as the MM model, all of the cdf matches the ecdf. 
+
+
+iv. QQ plot
+```{r}
+ps <- ppoints(1000)
+theoretical <- qnorm(ps, mean=coef(fit)[1], sd=coef(fit)[2])
+sample <- quantile(d1$ht, ps)
+plot(theoretical, sample,main="QQ Plot for normal distribution", ylab="sample", xlab="theoretical")
+abline(0,1)
+
+ps <- ppoints(1000)
+theoretical <- qgamma(ps, shape=coef(fit1)[1], scale=coef(fit1)[2])
+sample <- quantile(d1$ht, ps)
+plot(theoretical, sample,main="QQ Plot for gamma distribution", ylab="sample", xlab="theoretical")
+abline(0,1)
+
+ps <- ppoints(1000)
+theoretical <- qweibull(ps, shape=coef(fit2)[1], scale=coef(fit2)[2])
+sample <- quantile(d1$ht, ps)
+plot(theoretical, sample,main="QQ Plot for weibull distribution", ylab="sample", xlab="theoretical")
+abline(0,1)
+
+
+```
+These are the QQ plot for three types of the distribution. It is same as the MM model, the sample falls into theoretical. However, for normal and gamma distribution, the qqplot matches the line y=x. For weibull distribtuion, the qqplot only match part of the line y=x.
+ 
+## Take Home Messages 
+
+By running the simulation and visualization, we can observe that not both of the datasets can match the distribution. We used both MM and MLE model to perform the task. The result is not obvious, but we can still get the conclusion by comparing the two models, the MM model has a better fit than the MLE model. In the future, if performing similar task to find the best fit, MM model will be a better choice. Another thing we have to pay attention is the data. Not all of the distribution works for all the data. We can see clearly that the ht data has a better fit than gh, which means the type of data structure of ht is closer to these three distribution. For the ht data, we can also observe that the weibull distribution doesn't follow. Or in other words, the data doesn't fall into weibull distribution. It is important to know what type of data we are dealing with, so that we can select the best fit distribution. 
+
+
+
