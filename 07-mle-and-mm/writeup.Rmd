@@ -34,6 +34,8 @@ d1 <- nhgh %>%
 
 a. MM
 i. estimate of parameters 
+
+#The equation to find the weibull scale is from this website. Provided and explained by Professor Murat Tiryakioḡlu. https://www.researchgate.net/post/Can-anybody-explain-how-to-find-out-the-shape-and-scale-parameters-for-weibull-statistics-for-average-wind-speed-data-for-a-month
 ```{r}
 mm_nor_mean=mean(d1$gh)
 mm_nor_sd=sd(d1$gh)
@@ -41,7 +43,12 @@ mm_ga_shape<-mean(d1$gh)^2/var(d1$gh)
 mm_ga_scale<-var(d1$gh)/mean(d1$gh)
 mm_web_shape<-1.2785*(mean(d1$gh)/sd(d1$gh)-0.5004)
 mm_web_scale<- mean(d1$gh)/(gamma(1+1/mm_web_shape))
-
+print(paste("the mm normal mean is:",mm_nor_mean))
+print(paste("mm nornal standard deviation is:",mm_nor_sd))
+print(paste("mm gamma shape is:",mm_ga_shape))
+print(paste("mm gamma scale is:",mm_ga_scale))
+print(paste("mm weibull shape is:",mm_web_shape))
+print(paste("mm weibull scale is:",mm_web_scale))
 ```
 above is the code to find the parameter of each distribution. For normal distribution, we find the mean and stand deviation. For gamma distribtuion, we find the shape and scale, which is mean^2/var. For weibull distribtuion, we can the shape and scale too. The shape function is 1.2785*(mean(d1$gh)/sd(d1$gh)-0.5004), and the scale function is mean(d1$gh)/(gamma(1+1/mm_web_shape)
 
@@ -53,11 +60,13 @@ hist(d1$gh,freq = FALSE,breaks = 100,main="Glycohemoglobin(MM)",xlab = "gh",ylab
 curve(dnorm(x,mm_nor_mean,mm_nor_sd),add = TRUE,col="blue")
 curve(dgamma(x,shape = mm_ga_shape,scale = mm_ga_scale),add = TRUE,col="red")
 curve(dweibull(x,mm_web_shape,mm_web_scale),add = TRUE,col="green")
-abline(v=median(d1$gh),col="red",lwd=3)
-abline(v=qnorm(0.5,mm_nor_mean,mm_nor_sd),col="yellow",lwd=3)
-abline(v=qgamma(0.5,shape=mm_ga_shape,scale=mm_ga_scale),col="blue",lwd=3)
-abline(v=qweibull(0.5,shape=mm_web_shape,scale=mm_web_scale),col="green",lwd=3)
 
+abline(v=median(d1$gh),col="yellow",lwd=3)
+abline(v=qnorm(0.5,mm_nor_mean,mm_nor_sd),col="blue",lwd=3)
+abline(v=qgamma(0.5,shape=mm_ga_shape,scale=mm_ga_scale),col="red",lwd=3)
+abline(v=qweibull(0.5,shape=mm_web_shape,scale=mm_web_scale),col="green",lwd=3)
+legend(8,0.95,legend=c("normal","gamma","weibull","estimated median"),
+       col=c( "blue","red","green","yellow"), lty=1, cex=0.8)
 ```
 This is the hisgram based on gh. The three types of distribution are overlaid to the same graph.we can see that the estimated pdf of data gh does not fit to the pdf. 
 
@@ -68,6 +77,8 @@ plot(ecdf(d1$gh),main="Glycohemoglobin(MM)",xlab = "gh",ylab = "CDF")
 curve(pnorm(x,mm_nor_mean,mm_nor_sd),add = TRUE,col="red")
 curve(pgamma(x,shape=mm_ga_shape,scale=mm_ga_scale),add=TRUE,col="blue")
 curve(pweibull(x,shape = mm_web_shape,scale = mm_web_scale),add=TRUE,col="green")
+legend(8,0.755,legend=c("normal","gamma","weibull"),
+       col=c( "blue","red","green"), lty=1, cex=0.8)
 ```
 This is the CDF of the gh. The three types of distribtuion are overlaid to the same graph. We can see the estimated CDF of gh data does not fit to the pdf. 
 
@@ -192,6 +203,8 @@ curve(
   , col = "green"
   , lwd = 3
 )
+legend(8,0.755,legend=c("normal","gamma","weibull"),
+       col=c( "blue","red","green"), lty=1, cex=0.8)
 ```
 This is the cdf overlay to ecdf. The three types of distribution has been shown in the graph. The reuslt is better than MM model, but it still doesn't fit well. 
 
@@ -217,10 +230,11 @@ curve(
   , col = "green"
   , lwd = 3
 )
-abline(v=qnorm(0.5,coef(fit)[1],coef(fit)[2]),col="yellow",lwd=3)
-abline(v=qgamma(0.5,shape=coef(fit1)[1],scale=coef(fit1)[2]),col="blue",lwd=3)
+abline(v=qnorm(0.5,coef(fit)[1],coef(fit)[2]),col="blue",lwd=3)
+abline(v=qgamma(0.5,shape=coef(fit1)[1],scale=coef(fit1)[2]),col="red",lwd=3)
 abline(v=qweibull(0.5,shape=coef(fit2)[1],scale=coef(fit2)[2]),col="green",lwd=3)
-
+legend(8,0.755,legend=c("normal","gamma","weibull"),
+       col=c( "blue","red","green"), lty=1, cex=0.8)
 
 ```
 This is the pdf overlay the histogram.  The three types of distribution has been shown in the graph. The reuslt is better than MM model, but it still doesn't fit well. 
@@ -270,7 +284,12 @@ mm_ga_shape<-mean(d1$ht)^2/var(d1$ht)
 mm_ga_scale<-var(d1$ht)/mean(d1$ht)
 mm_web_shape<-1.2785*(mean(d1$ht)/sd(d1$ht)-0.5004)
 mm_web_scale<- mean(d1$ht)/(gamma(1+1/mm_web_shape))
-
+print(paste("the mm normal mean is:",mm_nor_mean))
+print(paste("mm nornal standard deviation is:",mm_nor_sd))
+print(paste("mm gamma shape is:",mm_ga_shape))
+print(paste("mm gamma scale is:",mm_ga_scale))
+print(paste("mm weibull shape is:",mm_web_shape))
+print(paste("mm weibull scale is:",mm_web_scale))
 ```
 above is the code to find the parameter of each distribution. For normal distribution, we find the mean and stand deviation. For gamma distribtuion, we find the shape and scale, which is mean^2/var. For weibull distribtuion, we can the shape and scale too. The shape function is 1.2785*(mean(d1$ht)/sd(d1$ht)-0.5004), and the scale function is mean(d1$ht)/(gamma(1+1/mm_web_shape)
 
@@ -283,10 +302,12 @@ hist(d1$ht,freq = FALSE,breaks = 100,main="Height(MM)",xlab = "height",ylab = "D
 curve(dnorm(x,mm_nor_mean,mm_nor_sd),add = TRUE,col="blue")
 curve(dgamma(x,shape = mm_ga_shape,scale = mm_ga_scale),add = TRUE,col="red")
 curve(dweibull(x,mm_web_shape,mm_web_scale),add = TRUE,col="green")
-abline(v=median(d1$ht),col="red",lwd=3)
-abline(v=qnorm(0.5,mm_nor_mean,mm_nor_sd),col="yellow",lwd=3)
-abline(v=qgamma(0.5,shape=mm_ga_shape,scale=mm_ga_scale),col="blue",lwd=3)
+abline(v=median(d1$ht),col="yellow",lwd=3)
+abline(v=qnorm(0.5,mm_nor_mean,mm_nor_sd),col="blue",lwd=3)
+abline(v=qgamma(0.5,shape=mm_ga_shape,scale=mm_ga_scale),col="red",lwd=3)
 abline(v=qweibull(0.5,shape=mm_web_shape,scale=mm_web_scale),col="green",lwd=3)
+legend(175,0.04,legend=c("normal","gamma","weibull","estimated median"),
+       col=c( "blue","red","green","yellow"), lty=1, cex=0.8)
 ```
 This is the hisgram based on ht. The three types of distribution are overlaid to the same graph.we can see unlike the gh data, the height data falls into the PDF for most of the part. 
 
@@ -299,6 +320,8 @@ plot(ecdf(d1$ht),main="Height(MM)",xlab = "height",ylab = "CDF")
 curve(pnorm(x,mm_nor_mean,mm_nor_sd),add = TRUE,col="red")
 curve(pgamma(x,shape=mm_ga_shape,scale=mm_ga_scale),add=TRUE,col="blue")
 curve(pweibull(x,shape = mm_web_shape,scale = mm_web_scale),add=TRUE,col="green")
+legend(140,0.755,legend=c("normal","gamma","weibull"),
+       col=c( "blue","red","green"), lty=1, cex=0.8)
 ```
 This is the CDF of the height. The three types of distribtuion are overlaid to the same graph. We can see the estimated CDF of height data almost match exactly like the ecdf. 
 
@@ -420,6 +443,8 @@ curve(
   , col = "green"
   , lwd = 3
 )
+legend(140,0.755,legend=c("normal","gamma","weibull"),
+       col=c( "blue","red","green"), lty=1, cex=0.8)
 ```
 This is the cdf overlay to ecdf. The three types of distribution has been shown in the graph. The reuslt is same as the MM model, all of the cdf match with the ecdf. 
 
@@ -452,7 +477,8 @@ abline(v=qnorm(0.5,coef(fit)[1],coef(fit)[2]),col="yellow",lwd=3)
 abline(v=qgamma(0.5,shape=coef(fit1)[1],scale=coef(fit1)[2]),col="blue",lwd=3)
 abline(v=qweibull(0.5,shape=coef(fit2)[1],scale=coef(fit2)[2]),col="green",lwd=3)
 
-
+legend(180,0.04,legend=c("normal","gamma","weibull"),
+       col=c( "blue","red","green"), lty=1, cex=0.8)
 
 
 
