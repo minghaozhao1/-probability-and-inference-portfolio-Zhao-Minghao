@@ -1,12 +1,13 @@
 ---
 title: "Untitled"
+name: "Minghao Zhao"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
+In this assignment, we will perform a simulation to calculate the coverage probability of the 95% confidence interval of the median when computed from F̂Xmle.
 
 ```{r}
 library(stats4)
@@ -14,8 +15,14 @@ library(base)
 library(dplyr)
 library(tidyverse)
 ```
+Coverage probability is an important operating characteristic of methods for constructing interval estimates, particularly confidence intervals.For the purposes of this deliverable, define the 95% confidence interval of the median to be the middle 95% of sampling distribution of the median. Similarly, the 95% confidence interval of the mean, standard deviation, etc. is the middle 95% of the respective sampling distribution. define the coverage probability as the long run proportion of intervals that capture the population parameter of interest. Conceptualy, one can calculate the coverage probability with the following steps
 
-Step: Generate a single sample from a standard normal distribution of size N = 201. Explain to the reader how you use MLE to estimate the distribution.
+1. generate a sample of size N from a known distribution
+2. construct a confidence interval
+3. determine if the confidence captures the population parameter
+4. Repeat steps (1) - (3) many times. Estimate the coverage probability as the proportion of samples for which the confidence interval captured the population parameter.
+
+In the following setp, we used sample size 201 with mean 0 and standard deviation 1 to generate a sample data. We can see from the code, we used MLE to estimate our mean and standard deviation for the distribution. 
 ```{r}
 sampledis=c(201,0,1)
 
@@ -29,10 +36,18 @@ estimation.mle <- function(data) {
   mle.sd=sd(data)
   return(c(length(data),mle.mean,mle.sd))
 }
-sampledis %>% generate_data %>%  estimation.mle()
+data = sampledis %>% generate_data
+mean=mean(data)
+sd=sd(data)
+estimatedMLE<-data%>%  estimation.mle()
+estimatedMLE
+hist(data,freq = FALSE)
+curve(dnorm(x,mean=mean,sd=sd),add=TRUE)
 ```
 
-Step: Show the reader how you approximate the sampling distribution of the median, conditional on the estimate of the distribution in the previous step.
+We used MLE to estimated the mean and standard deviation. 
+
+We need to define the sampling distribution function. For the coverage interval, the lower confidence limit is 2.5% and the upper confidence limit is 97.5%. We will run 5000 times of simulation by using our estimated MLE mean and standard deviation to find the median. 
 ```{r}
 boot_ci <- function(parameter1){
   # Hard coded number of draws
@@ -50,20 +65,21 @@ capture_median <- function(ci){
   # Hard coded 0 as parameter of interest
   1*(ci[1] < 0 & 0 < ci[2])
 }
+quantile <- estimatedMLE%>%  boot_ci 
+quantile
+quantile%>% capture_median
 ```
+the code will return a 1 if the captured the population parameter of interest, return a 0 if it is not. 
 
-Step: Describe how you calculate a 95% confidence interval from the approximated sampling distribution.
-```{r}
-
-```
-
-Step: Explain the concept of coverage probability. Explain your code for calculating the coverage probability.
+The figure below shows the 95% confidence interval calculated for a handful of samples. Intervals in blue capture the population parameter of interest; intervals in red do not.
 ```{r}
 
 knitr::include_graphics('1.png')
 ```
 
-Step: Perform the simulation and report the results.
+Idealy, a 95% confidence interval will capture the population parameter of interest in 95% of samples.
+
+We repeat above steps for 1000 times. 
 ```{r}
 M <- 1000 # Make small, we are still testing the code
 captures <- rep(NA, M)
@@ -74,8 +90,9 @@ for(i in 1:M){
 capture_prob <- mean(captures)
 capture_prob
 ```
+The coverage probability for 1000 times simulations is 0.977. By definition, a 95% will be effective, our result is higher than the standard. 
 
-Step: Describe how you might change the simulation to learn more about the operating characteristics of your chosen method for constructing the 95% confidence interval.
+I might change the simulation to learn more about the operating characteristics by selecting alternative distribution. For example, I will use Gamma or Weibull distribution what we have used in previous deliverables to construct 95% confidence interval. 
 
 
 
