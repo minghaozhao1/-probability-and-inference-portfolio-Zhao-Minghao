@@ -322,7 +322,16 @@ fit2 &lt;- mle(
   , lower = c(0, 0.01)
 )
 #par(mfrow = c(1,2)); plot(profile(fit), absVal = FALSE)
-#par(mfrow = c(1,2))</code></pre>
+#par(mfrow = c(1,2))
+coef(fit)</code></pre>
+<pre><code>##    mean      sd 
+## 5.72460 1.05172</code></pre>
+<pre class="r"><code>coef(fit1)</code></pre>
+<pre><code>##      shape      scale 
+## 40.7065049  0.1406358</code></pre>
+<pre class="r"><code>coef(fit2)</code></pre>
+<pre><code>##    shape    scale 
+## 4.125254 6.173885</code></pre>
 <p>This is the MLE model. We have to define it before we can esitmate. ii. overlay estimated CDF onto eCDF</p>
 <pre class="r"><code>plot(ecdf(d1$gh), main=&quot;Glycohemoglobin(MLE)&quot;,xlab = &quot;gh&quot;,ylab = &quot;Density&quot;)
 curve(
@@ -524,7 +533,16 @@ fit2 &lt;- mle(
   , lower = c(0, 0.01)
 )
 #par(mfrow = c(1,2)); plot(profile(fit), absVal = FALSE)
-#par(mfrow = c(1,2))</code></pre>
+#par(mfrow = c(1,2))
+coef(fit)</code></pre>
+<pre><code>##       mean         sd 
+## 160.741901   7.316502</code></pre>
+<pre class="r"><code>coef(fit1)</code></pre>
+<pre><code>##       shape       scale 
+## 479.6126962   0.3351514</code></pre>
+<pre class="r"><code>coef(fit2)</code></pre>
+<pre><code>##     shape     scale 
+##  21.85398 164.24719</code></pre>
 <p>This is the MLE model. We have to define it before we can esitmate.</p>
 <ol start="2" style="list-style-type: lower-roman">
 <li>overlay estimated CDF onto eCDF</li>

@@ -179,6 +179,10 @@ fit2 <- mle(
 )
 #par(mfrow = c(1,2)); plot(profile(fit), absVal = FALSE)
 #par(mfrow = c(1,2))
+coef(fit)
+coef(fit1)
+coef(fit2)
+
 ```
 This is the MLE model. We have to define it before we can esitmate. 
 ii. overlay estimated CDF onto eCDF
@@ -417,6 +421,9 @@ fit2 <- mle(
 )
 #par(mfrow = c(1,2)); plot(profile(fit), absVal = FALSE)
 #par(mfrow = c(1,2))
+coef(fit)
+coef(fit1)
+coef(fit2)
 ```
 This is the MLE model. We have to define it before we can esitmate. 
 
