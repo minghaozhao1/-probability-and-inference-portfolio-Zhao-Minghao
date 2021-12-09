@@ -24,6 +24,7 @@ Coverage probability is an important operating characteristic of methods for con
 
 In the following setp, we used sample size 201 with mean 0 and standard deviation 1 to generate a sample data. We can see from the code, we used MLE to estimate our mean and standard deviation for the distribution. 
 ```{r}
+set.seed(3)
 sampledis=c(201,0,1)
 
 generate_data <- function(parameter){ 
@@ -31,18 +32,34 @@ generate_data <- function(parameter){
   rnorm(parameter[1],mean=parameter[2],sd=parameter[3]) 
 }
 
+
 estimation.mle <- function(data) {
-  mle.mean=mean(data)
-  mle.sd=sd(data)
+  nmean=mean(data)
+  nsd=sd(data)
+  nLL <- function(mean, sd){
+  fs <- dnorm(
+        x = data
+      , mean 
+      , sd 
+      , log = TRUE
+    ) 
+  -sum(fs)
+}
+fit <- mle(
+    minuslogl =nLL
+  , start = list(mean = nmean, sd = nsd))
+  mle.mean=coef(fit)[1]
+  mle.sd=coef(fit)[2]
   return(c(length(data),mle.mean,mle.sd))
 }
 data = sampledis %>% generate_data
 mean=mean(data)
 sd=sd(data)
-estimatedMLE<-data%>%  estimation.mle()
+estimatedMLE<- data%>%  estimation.mle()
 estimatedMLE
 hist(data,freq = FALSE)
 curve(dnorm(x,mean=mean,sd=sd),add=TRUE)
+
 ```
 
 We used MLE to estimated the mean and standard deviation. 
@@ -80,7 +97,7 @@ knitr::include_graphics('1.png')
 Idealy, a 95% confidence interval will capture the population parameter of interest in 95% of samples.
 
 We repeat above steps for 1000 times. 
-```{r}
+```{r message=F , warning=F}
 M <- 1000 # Make small, we are still testing the code
 captures <- rep(NA, M)
 for(i in 1:M){
@@ -90,9 +107,9 @@ for(i in 1:M){
 capture_prob <- mean(captures)
 capture_prob
 ```
-The coverage probability for 1000 times simulations is 0.977. By definition, a 95% will be effective, our result is higher than the standard. 
+The coverage probability for 1000 times simulations is 0.976. By definition, a 95% will be effective, our result is higher than the standard. 
 
-I might change the simulation to learn more about the operating characteristics by selecting alternative distribution. For example, I will use Gamma or Weibull distribution what we have used in previous deliverables to construct 95% confidence interval. 
+I might change the simulation to learn more about the operating characteristics by selecting alternative distribution. For example, I will use change the iteration of the simulation. Right now it is runs 1000 times to generate the result. By adding more times to the simulation, we could get a more precise result. 
 
 
 
